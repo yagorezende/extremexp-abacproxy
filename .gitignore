@@ -1,0 +1,10 @@
+.venv
+.env
+.idea/**
+.idea
+.idea/
+.idea/*
+.vscode
+**/__pycache__
+**/*.pyc
+contracts
