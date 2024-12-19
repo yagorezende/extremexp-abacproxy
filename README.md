@@ -33,10 +33,10 @@ The Swagger documentation is available on the root page.
 
 ## Development Progress
 #### Overall progress: 
-![](https://geps.dev/progress/50)
+![](https://geps.dev/progress/75)
 
 #### Tasks:
 - [x] Project Basic Structure (Flask API + Proxy + kickoff script)
 - [x] Integrate with the Keycloak Authorization Server (OAuth or MetaMask)
-- [ ] Dockerize the project
+- [x] Dockerize the project
 - [ ] Integrate with the [ExtremeXP Portal](https://github.com/ExtremeXP-VU/ExtremeXP-portal)
