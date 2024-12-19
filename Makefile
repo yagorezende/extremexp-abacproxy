@@ -6,6 +6,12 @@ install:
 run:
 	bash run.sh
 
+build:
+	bash build.sh
+
+run-docker:
+	docker-compose up
+
 destroy:
 	rm -rf .venv
 	rm -rf __pycache__
