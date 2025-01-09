@@ -1,3 +1,5 @@
+import json
+
 import requests
 import logging
 
@@ -146,10 +148,13 @@ class KeycloakConnect:
             raise_exception: Raise exception if the request ended with a status >= 400.
 
         Returns:
-            bollean: Token valid (True) or invalid (False)
+            boolean: Token valid (True) or invalid (False)
         """
+
         introspect_token = self.introspect(token, raise_exception)
+        print(f"Introspect token: {introspect_token}")
         is_active = introspect_token.get("active", None)
+        print(f"Token is active: {is_active}")
         return True if is_active else False
 
     def roles_from_token(self, token, raise_exception=True):

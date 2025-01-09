@@ -1,4 +1,4 @@
-.PHONY: install run destroy
+.PHONY: install run destroy run-docker build docker-destroy
 
 install:
 	bash install.sh
@@ -10,7 +10,13 @@ build:
 	bash build.sh
 
 run-docker:
-	docker-compose up
+	docker-compose up --build
+
+docker-destroy:
+	docker-compose down
+	docker-compose rm -f
+	docker container prune
+	docker image prune -a
 
 destroy:
 	rm -rf .venv
