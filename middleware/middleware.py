@@ -1,3 +1,5 @@
+import logging
+
 from flask import Flask
 from werkzeug import Response
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -72,11 +74,30 @@ class KeycloakMiddleware(ProxyFix):
         """
         return self.keycloak.is_token_active(self._get_request_token(environ))
 
+    def _get_proxy_target(self, environ):
+        """
+        Get the target URL from the request.
+        Note: This method will raise an error if the 'to' parameter is not present in the request.
+        """
+
+        forward_url: str = environ.get('werkzeug.request').args.get('to')
+        if forward_url is None:
+            raise MalformedRequestError()
+
+        # remove the http*://*/ prefix
+        if forward_url.startswith('http'):
+            forward_url = forward_url.split('://')[1]
+            if forward_url.find('/') != -1:
+                forward_url = forward_url[forward_url.find('/'):]
+            else:
+                forward_url = '/'
+        return forward_url
+
     def _is_token_authorized(self, environ):
         """
         Check if the token is authorized.
         """
-        uri = environ.get('PATH_INFO')
+        uri = self._get_proxy_target(environ)
         token = self._get_request_token(environ)
         scope = self._get_request_scope(environ)
         return self.keycloak.has_context_access(token, uri, scope)

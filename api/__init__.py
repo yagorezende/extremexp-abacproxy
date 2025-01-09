@@ -3,6 +3,7 @@ from flask import Flask, Blueprint
 from flask_restx import Api
 
 from api.api import api as proxy_ns
+from werkzeug.middleware.proxy_fix import ProxyFix
 from middleware.middleware import KeycloakMiddleware
 
 from dotenv import load_dotenv
@@ -49,4 +50,4 @@ api = Api(app,
 
 
 # create an app context so the App can be used in different modules
-api.add_namespace(proxy_ns, path='/proxy')
+api.add_namespace(proxy_ns, path='*')

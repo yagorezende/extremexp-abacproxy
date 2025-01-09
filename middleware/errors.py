@@ -26,3 +26,9 @@ class MissingScopeError(KeycloakMiddlewareError):
     def __init__(self):
         self.message = "Missing scope. Please send a scope in the request header."
         self.error_code = 400
+
+
+class MalformedRequestError(KeycloakMiddlewareError):
+    def __init__(self):
+        self.message = "Malformed request. The request must contain a 'to' parameter."
+        self.error_code = 400
