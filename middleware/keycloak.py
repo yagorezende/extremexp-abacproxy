@@ -152,9 +152,9 @@ class KeycloakConnect:
         """
 
         introspect_token = self.introspect(token, raise_exception)
-        print(f"Introspect token: {introspect_token}")
+        # print(f"Introspect token: {introspect_token}")
         is_active = introspect_token.get("active", None)
-        print(f"Token is active: {is_active}")
+        # print(f"Token is active: {is_active}")
         return True if is_active else False
 
     def roles_from_token(self, token, raise_exception=True):
@@ -255,7 +255,7 @@ class KeycloakConnect:
             "authorization": "Bearer " + access_token,
         }
 
-        print(payload)
+        # print(payload)
 
         try:
             response = requests.post(
@@ -271,10 +271,10 @@ class KeycloakConnect:
 
     def has_context_access(self, token, uri, scope):
         context_token = self.get_pat_token(token, uri, scope)
-        print("Got context token", context_token)
+        # print("Got context token", context_token)
         if context_token is not None:
             resource_ticket = self.get_resource_ticket(context_token, uri, scope)
-            print("Got resource ticket ->", resource_ticket)
+            # print("Got resource ticket ->", resource_ticket)
             return resource_ticket is not None
         else:
             return False
