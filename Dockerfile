@@ -9,7 +9,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY api /app/api
 COPY main.py /app
 COPY middleware /app/middleware
-COPY .env /app
 
 CMD ["python3", "main.py"]
 
