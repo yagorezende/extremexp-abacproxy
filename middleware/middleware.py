@@ -1,11 +1,9 @@
-import logging
-
 from flask import Flask
 from werkzeug import Response
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from middleware.keycloak import KeycloakConnect
 from middleware.errors import *
+from middleware.keycloak import KeycloakConnect
 
 
 class KeycloakMiddleware(ProxyFix):

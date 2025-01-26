@@ -155,7 +155,7 @@ class KeycloakConnect:
         # print(f"Introspect token: {introspect_token}")
         is_active = introspect_token.get("active", None)
         # print(f"Token is active: {is_active}")
-        return True if is_active else False
+        return is_active is not None
 
     def roles_from_token(self, token, raise_exception=True):
         """
@@ -265,7 +265,7 @@ class KeycloakConnect:
             )
             if response.status_code == 200:
                 return response.json()["access_token"]
-        except Exception as e:
+        except Exception:
             pass
         return None
 
@@ -276,5 +276,4 @@ class KeycloakConnect:
             resource_ticket = self.get_resource_ticket(context_token, uri, scope)
             # print("Got resource ticket ->", resource_ticket)
             return resource_ticket is not None
-        else:
-            return False
+        return False
