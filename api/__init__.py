@@ -1,12 +1,11 @@
 import os
+
+from dotenv import load_dotenv
 from flask import Flask, Blueprint
 from flask_restx import Api
 
-from api.api import api as proxy_ns
-from werkzeug.middleware.proxy_fix import ProxyFix
+from api.proxy import Proxy
 from middleware.middleware import KeycloakMiddleware
-
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -29,25 +28,4 @@ with app.app_context():
     app.wsgi_app = KeycloakMiddleware(app)
 blueprint = Blueprint('api', __name__)
 app.register_blueprint(blueprint)
-
-authorizations = {
-    'bearer': {
-        'name': "Authorization",
-        'in': "header",
-        'type': "oauth2",
-        'flow': "password",
-        'scopes': {
-            'openid': 'openid'
-        },
-        'description': "Request with username and password!"
-    }
-}
-api = Api(app,
-          title='Flask ExtremeXP App',
-          version='1.0',
-          description='Experiments with python flask', prefix='/',
-          authorizations=authorizations)
-
-
-# create an app context so the App can be used in different modules
-api.add_namespace(proxy_ns, path='*')
+app.add_url_rule('/proxy', view_func=Proxy.as_view('proxy'))
