@@ -1,9 +1,9 @@
 import os
-
-from api import app
 from dotenv import load_dotenv
 
 load_dotenv()
+
+from api import app
 
 
 if __name__ == '__main__':
