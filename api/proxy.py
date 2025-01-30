@@ -7,9 +7,10 @@ class Proxy(View):
     init_every_request = False
 
     def dispatch_request(self):
+        # print("Here!")
         # get the target URL from the 'to' query parameter
         target_url = request.args.get('to')
-        print("target_url", target_url)
+        # print("target_url", target_url)
 
         if not target_url:
             return jsonify({"error": "Missing 'to' parameter"}), 400

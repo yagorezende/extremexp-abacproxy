@@ -61,6 +61,11 @@ jobs:
     name: Build
     needs: [ pylint, hadolint ]
     runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+      contents: read
+      attestations: write
+      id-token: write
     steps:
       - name: Get tag # This is not used for now, we use tag from cd-prod.yaml or cd-dev.yaml workflows
         id: repository
