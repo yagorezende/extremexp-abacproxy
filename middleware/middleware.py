@@ -4,6 +4,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 from middleware.errors import *
 from middleware.keycloak import KeycloakConnect
+from keycloak import KeycloakOpenIDConnection
 
 
 class KeycloakMiddleware(ProxyFix):
@@ -17,7 +18,15 @@ class KeycloakMiddleware(ProxyFix):
             server_url=app.config['KEYCLOAK_SERVER_URL'],
             realm_name=app.config['OIDC_RP_REALM_ID'],
             client_id=app.config['OIDC_RP_CLIENT_ID'],
-            client_secret_key=app.config['OIDC_RP_CLIENT_SECRET']
+            client_secret_key=app.config['OIDC_RP_CLIENT_SECRET'],
+            connection=KeycloakOpenIDConnection(
+                server_url=app.config['KEYCLOAK_SERVER_URL'] + '/realms',
+                username=app.config['KEYCLOAK_USERNAME'],
+                password=app.config['KEYCLOAK_USER_PASSWORD'],
+                realm_name=app.config['OIDC_RP_REALM_ID'],
+                client_id='admin-cli',
+                user_realm_name='master',
+            )
         )
 
     def __call__(self, environ, start_response):
@@ -55,16 +64,7 @@ class KeycloakMiddleware(ProxyFix):
 
         if scope:
             return scope
-        # return 'read' if the request is a GET request
-        if not scope and environ.get('REQUEST_METHOD') == 'GET':
-            return 'read'
-        # return 'write' if the request is a POST|PUT|PATCH request
-        if not scope and environ.get('REQUEST_METHOD') in ['POST', 'PUT', 'PATCH']:
-            return 'write'
-        # return 'destroy' if the request is a DELETE request
-        if not scope and environ.get('REQUEST_METHOD') == 'DELETE':
-            return 'destroy'
-        raise MissingScopeError()
+        return None
 
     def _is_token_valid(self, environ):
         """
