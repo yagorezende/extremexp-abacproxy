@@ -4,12 +4,18 @@ import requests
 import logging
 
 from requests import HTTPError
+from keycloak import KeycloakAdmin, KeycloakOpenIDConnection
+
+from middleware.errors import MissingScopeError
 
 LOGGER = logging.getLogger(__name__)
 
 
 class KeycloakConnect:
-    def __init__(self, server_url, realm_name, client_id, client_secret_key=None):
+
+    RESOURCES_CACHE = []
+
+    def __init__(self, server_url, realm_name, client_id, connection: KeycloakOpenIDConnection, client_secret_key=None):
         """Create Keycloak Instance.
 
         Args:
@@ -34,6 +40,8 @@ class KeycloakConnect:
         self.realm_name = realm_name
         self.client_id = client_id
         self.client_secret_key = client_secret_key
+        self.keycloak_connection = connection
+        self.keycloak_admin = KeycloakAdmin(connection=self.keycloak_connection)
 
         # Keycloak useful Urls
         self.well_known_endpoint = (
@@ -88,6 +96,20 @@ class KeycloakConnect:
                 raise
             return {}
         return response
+
+    def get_jwt_from_token(self, token):
+        introspect_token = self.introspect(token)
+        return {
+            "access_token": token,
+            "expires_in": 36000,
+            "refresh_expires_in": 36000,
+            "refresh_token": token,
+            "token_type": "Bearer",
+            "id_token": token,
+            "not-before-policy": 0,
+            "session_state": introspect_token.get("session_state", ""),
+            "scope": introspect_token.get("scope", ""),
+        }
 
     def introspect(self, token, token_type_hint=None, raise_exception=True):
         """
@@ -244,11 +266,24 @@ class KeycloakConnect:
             pass
         return None
 
+    def resource_has_protection(self, access_token, uri, scope):
+        # TODO: implement cache
+        client_id = self.keycloak_admin.get_client_id(self.client_id)
+        resources = self.keycloak_admin.get_client_authz_resources(client_id)
+
+        for resource in resources:
+            scopes = [scope['name'] for scope in resource.get("scopes", [])]
+            if uri in resource.get("uris", []):
+                if scope in scopes:
+                    return True
+                raise MissingScopeError()
+        return False
+
     def get_pat_token(self, access_token, uri, scope):
         payload = {
             "grant_type": "urn:ietf:params:oauth:grant-type:uma-ticket",
             "audience": self.client_id,
-            "permission": f"{uri}#{scope}",
+            "permission": f"{uri}#{scope}" if scope else uri,
         }
         headers = {
             "content-type": "application/x-www-form-urlencoded",
@@ -270,6 +305,9 @@ class KeycloakConnect:
         return None
 
     def has_context_access(self, token, uri, scope):
+        # check if the resource has protection, if not return True
+        if not self.resource_has_protection(token, uri, scope):
+            return True
         context_token = self.get_pat_token(token, uri, scope)
         # print("Got context token", context_token)
         if context_token is not None:

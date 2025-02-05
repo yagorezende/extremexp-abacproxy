@@ -13,6 +13,8 @@ app = Flask(__name__)
 
 with app.app_context():
     app.config['KEYCLOAK_SERVER_URL'] = os.getenv('KEYCLOAK_SERVER_URL')
+    app.config['KEYCLOAK_USERNAME'] = os.getenv('KEYCLOAK_USERNAME')
+    app.config['KEYCLOAK_USER_PASSWORD'] = os.getenv('KEYCLOAK_USER_PASSWORD')
     app.config['OIDC_OP_AUTHORIZATION_ENDPOINT'] = os.getenv('OIDC_OP_AUTHORIZATION_ENDPOINT')
     app.config['OIDC_OP_TOKEN_ENDPOINT'] = os.getenv('OIDC_OP_TOKEN_ENDPOINT')
     app.config['OIDC_OP_USER_ENDPOINT'] = os.getenv('OIDC_OP_USER_ENDPOINT')
