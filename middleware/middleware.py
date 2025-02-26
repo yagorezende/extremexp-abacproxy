@@ -31,9 +31,9 @@ class KeycloakMiddleware(ProxyFix):
 
     def __call__(self, environ, start_response):
         try:
-            if not self._is_token_valid(environ):
+            if not environ.get("REQUEST_METHOD") == 'OPTIONS' and not self._is_token_valid(environ):
                 raise InvalidTokenError()
-            if not self._is_token_authorized(environ):
+            if not environ.get("REQUEST_METHOD") == 'OPTIONS' and not self._is_token_authorized(environ):
                 raise UnauthorizedError()
         except KeycloakMiddlewareError as e:
             return Response(e.message, status=e.error_code)(environ, start_response)
@@ -70,6 +70,9 @@ class KeycloakMiddleware(ProxyFix):
         """
         Check if the token is valid.
         """
+        if self._get_proxy_target(environ).count("/") <= 1:
+            return True
+
         return self.keycloak.is_token_active(self._get_request_token(environ))
 
     def _get_proxy_target(self, environ):
@@ -89,13 +92,17 @@ class KeycloakMiddleware(ProxyFix):
                 forward_url = forward_url[forward_url.find('/'):]
             else:
                 forward_url = '/'
-        return forward_url
+        return forward_url.replace(" ", "%20")
 
     def _is_token_authorized(self, environ):
         """
         Check if the token is authorized.
         """
         uri = self._get_proxy_target(environ)
+
+        if uri.count("/") <= 1:
+            return True
+
         token = self._get_request_token(environ)
         scope = self._get_request_scope(environ)
         return self.keycloak.has_context_access(token, uri, scope)

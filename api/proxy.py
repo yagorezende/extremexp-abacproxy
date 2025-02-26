@@ -5,6 +5,7 @@ from flask.views import View
 
 class Proxy(View):
     init_every_request = False
+    methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'TRACE', 'CONNECT']
 
     def dispatch_request(self):
         # print("Here!")

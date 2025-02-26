@@ -308,6 +308,7 @@ class KeycloakConnect:
         # check if the resource has protection, if not return True
         if not self.resource_has_protection(token, uri, scope):
             return True
+        print(f"Resource has protection {uri}:{scope}")
         context_token = self.get_pat_token(token, uri, scope)
         # print("Got context token", context_token)
         if context_token is not None:

@@ -1,5 +1,7 @@
 .venv
 .env
+.env.local
+.env.remote
 .idea/**
 .idea
 .idea/
