@@ -43,8 +43,8 @@ class MissingScopeError(KeycloakMiddlewareError):
     """
     def __init__(self):
         super().__init__()
-        self.message = "Missing scope. Please send a scope in the request header."
-        self.error_code = 400
+        self.message = "Missing valid scope. Please send a valid scope in the request header."
+        self.error_code = 403
 
 
 class MalformedRequestError(KeycloakMiddlewareError):
