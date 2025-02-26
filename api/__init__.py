@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from flask import Flask, Blueprint
-from flask_restx import Api
+from flask_cors import CORS
 
 from api.proxy import Proxy
 from middleware.middleware import KeycloakMiddleware
@@ -10,6 +10,8 @@ from middleware.middleware import KeycloakMiddleware
 load_dotenv()
 
 app = Flask(__name__)
+cors = CORS(app) # allow CORS for all domains on all routes.
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 with app.app_context():
     app.config['KEYCLOAK_SERVER_URL'] = os.getenv('KEYCLOAK_SERVER_URL')
