@@ -18,15 +18,22 @@ class Proxy(View):
 
         # Forward the request to the target URL
         try:
-            response = requests.request(
+            content = dict(
                 method=request.method,
                 url=target_url,
                 headers={key: value for key, value in request.headers if key != 'Host'},
-                data=request.get_data(),
                 cookies=request.cookies,
-                allow_redirects=False
+                allow_redirects=False,
             )
 
+            if request.method in {'POST', 'PUT', 'PATCH'}:
+                content['data'] = request.get_data()
+
+            response = requests.request(**content)
+
+            # check if the response is chunked
+            if response.headers.get('Transfer-Encoding') == 'chunked':
+                del response.headers['Transfer-Encoding']
             # forward response to the caller
             return response.content, response.status_code, response.headers.items()
         except Exception as e:
