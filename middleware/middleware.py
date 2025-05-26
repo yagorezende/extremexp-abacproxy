@@ -100,9 +100,6 @@ class KeycloakMiddleware(ProxyFix):
         """
         uri = self._get_proxy_target(environ)
 
-        if uri.count("/") <= 1:
-            return True
-
         token = self._get_request_token(environ)
         scope = self._get_request_scope(environ)
         return self.keycloak.has_context_access(token, uri, scope)
