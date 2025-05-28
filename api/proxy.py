@@ -28,6 +28,11 @@ class Proxy(View):
 
             if request.method in {'POST', 'PUT', 'PATCH'}:
                 content['data'] = request.get_data()
+            elif request.method == 'GET':
+                query_params = request.args.to_dict()
+                # remove 'to' from query parameters to avoid infinite loop
+                query_params.pop('to', None)
+                content['params'] = query_params
 
             response = requests.request(**content)
 
