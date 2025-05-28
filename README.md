@@ -198,10 +198,10 @@ server {
           # Redirect all requests to the proxy service
           location /bkd {
                # capture the original URL changing the path to the backend service
-               set $original_url http://backend:5001$request_uri;
+               set $original_url http://backend:5001$uri;
 
                # pass the request to the proxy service
-               proxy_pass http://proxy-service/proxy?to=$original_url;
+               proxy_pass http://proxy-service/proxy?to=$original_url&$args;
               
                # set the headers to be passed to the backend service
                proxy_set_header Host $host;
