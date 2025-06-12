@@ -26,7 +26,7 @@ class Proxy(View):
                 allow_redirects=False,
             )
 
-            if request.method in {'POST', 'PUT', 'PATCH'}:
+            if request.method in {'POST', 'PUT', 'PATCH', 'DELETE'}:
                 content['data'] = request.get_data()
             elif request.method == 'GET':
                 query_params = request.args.to_dict()
